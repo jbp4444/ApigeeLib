@@ -114,7 +114,7 @@ function Apigee.new( params )
 			response = event.response,
 		}
 		
-		if ( event.isError ) then
+		if( event.isError ) then
 			print( "Network error!")
 			if( grp.network_num_tries > 0 ) then
 				print( "  trying again" )
@@ -124,9 +124,12 @@ function Apigee.new( params )
 				if( grp.onComplete ~= nil ) then
 					ee.isError = true
 					grp.onComplete( ee )
+				else
+					print( "onComplete is nil (error)" )
 				end
 			end
 		else
+			print( "response is ok" )
 			if( grp.command == "up_file" ) then
 				print( "found an upload response" )
 				grp.handleUploadResponse( event )
@@ -134,7 +137,9 @@ function Apigee.new( params )
 				print( "found a download response" )
 				grp.handleDownloadResponse( event )
 			else
+				--print( "response ["..event.response.."]" )
 				local resp = json.decode( event.response )
+				--print( "resp = "..tostring(resp) )
 				grp.last_response = resp
 				if( grp.command == "login" ) then
 					print( "found a login response" )
@@ -142,7 +147,10 @@ function Apigee.new( params )
 				end
 			end
 			if( grp.onComplete ~= nil ) then
+				--print( "calling func "..tostring(grp.onComplete) )
 				grp.onComplete( ee )
+			else
+				print( "onComplete is nil" )
 			end
 		end
 	end

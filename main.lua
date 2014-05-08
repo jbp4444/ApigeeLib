@@ -26,12 +26,30 @@
 --   apigee_password = "barbaz"
 require( "apigeeInfo" )
 
--- what test-sets to run?
+-- what test-environment to run?
 synchr_tests = false
 asynchr_tests = false
 cmdseq_tests = true
+-- what test-sets to run?
 entity_tests = false
 collection_tests = false
+file_tests = false
+activity_tests = true
+event_tests = false
+
+--
+--  --  --  --  --  --  --  --  --  --  --  --  --  --
+--
+
+if( file_tests ) then
+	-- create the file data.txt
+	local path = system.pathForFile(  "data.txt", system.CachesDirectory )
+	local fp = io.open( path, "w" )
+	for i=1,10 do
+		fp:write( "Hello World " )
+	end
+	fp:close()
+end
 
 --
 --  --  --  --  --  --  --  --  --  --  --  --  --  --

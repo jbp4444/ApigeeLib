@@ -27,6 +27,7 @@ function CommandSeq.new( clObj, params )
 	-- send an event back to the caller
 	local function callbackToUser( e )
 		-- TODO: check for name, isError, status, response
+		--print( "calling user onComplete func "..tostring(csObj.userOnComplete) )
 		if( csObj.userOnComplete ~= nil ) then
 			csObj.userOnComplete( e )
 		end
@@ -58,10 +59,20 @@ function CommandSeq.new( clObj, params )
 		local f = tfx[2]
 		local x = tfx[3]
 		-- save the user's onComplete function, even if nil
-		csObj.userOnComplete = x.onComplete
+		if( x == nil ) then
+			x = {}
+		else
+			-- if present, intercept the user's onComplete func
+			if( x.onComplete ~= nil ) then
+				--print( "saving user's onComplete func" )
+				csObj.userOnComplete = x.onComplete
+			end
+		end
 		-- we need to intercept the onComplete handler
 		x.onComplete = catchCloudResult
 		print( "running "..t.." command" )
+		--print( "  onComplete = "..tostring(x.onComplete) )
+		--print( "  user onComplete = "..tostring(csObj.userOnComplete) )
 		f( x )
 	end
 
@@ -73,6 +84,7 @@ function CommandSeq.new( clObj, params )
 				table.insert( csObj.seq, j )
 			end
 		else
+			-- just one command to add
 			table.insert( csObj.seq, {txt,cmd,opts} )
 		end
 	end
@@ -83,16 +95,17 @@ function CommandSeq.new( clObj, params )
 	
 	-- check for user-params
 	if( params ~= nil ) then
-		if( params.list ~= nil ) then
-			-- do a deep-copy since we'll be removing objects one at a time
-			for i,x in ipairs(params.list) do
-				csObj.seq[i] = x
-			end
-		end
-		if( params.onComplete ~= nil ) then
-			csObj.userOnComplete = params.onComplete
-		end
+		-- ok if onComplete is nil/unspecified
+		csObj.userOnComplete = params.onComplete
 	end
+	
+	-- if no onComplete func is given, take it from the cloud-obj
+	if( csObj.userOnComplete == nil ) then
+		csObj.userOnComplete = clObj.onComplete
+	end
+	
+	--print( "user-onComplete func is "..tostring(csObj.userOnComplete) )
+	--print( "override onComplete func with "..tostring(catchCloudResult) )
 	
 	return csObj
 end
