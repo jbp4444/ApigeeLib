@@ -230,7 +230,10 @@ function Apigee.new( params )
 	
 	function grp.findLastUuid( tbl )
 		local last_uuid = "LAST"
-		if( tbl ~= nil ) then
+		if( tbl == nil ) then
+			-- take the last uuid stored in the grp
+			last_uuid = grp.last_uuid
+		else
 			if( tbl.entities ~= nil ) then
 				if( tbl.entities[1].uuid ~= nil ) then
 					last_uuid = tbl.entities[1].uuid
@@ -425,7 +428,9 @@ function Apigee.new( params )
 		auxdata.body = json.encode( grp.data )
 		local url = grp.baseUrl() .. "/"
 				.. grp.collection
-		grp.ApigeeWorker( "c_file", "POST", url, auxdata )
+		local rtn = grp.ApigeeWorker( "POST", url, auxdata )
+		grp.last_uuid = grp.findLastUuid( rtn.response )
+		return rtn
 	end
 	function grp.retrieveFileObject( xtra )
 		grp.handleXtra( xtra )
@@ -437,7 +442,9 @@ function Apigee.new( params )
 		local url = grp.baseUrl() .. "/"
 				.. grp.collection .. "/"
 				.. grp.uuid
-		grp.ApigeeWorker( "r_file", "GET", url, auxdata )
+		local rtn = grp.ApigeeWorker( "GET", url, auxdata )
+		grp.last_uuid = grp.findLastUuid( rtn.response )
+		return rtn
 	end
 	function grp.updateFileObject( xtra )
 		grp.handleXtra( xtra )
@@ -454,7 +461,9 @@ function Apigee.new( params )
 		local url = grp.baseUrl() .. "/"
 				.. grp.collection .. "/"
 				.. grp.uuid
-		grp.ApigeeWorker( "u_file", "PUT", url, auxdata )
+		local rtn = grp.ApigeeWorker( "PUT", url, auxdata )
+		grp.last_uuid = grp.findLastUuid( rtn.response )
+		return rtn
 	end
 	function grp.deleteFileObject( xtra )
 		grp.handleXtra( xtra )
@@ -466,7 +475,9 @@ function Apigee.new( params )
 		local url = grp.baseUrl() .. "/"
 				.. grp.collection .. "/"
 				.. grp.uuid
-		grp.ApigeeWorker( "d_file", "DELETE", url, auxdata )
+		local rtn = grp.ApigeeWorker( "DELETE", url, auxdata )
+		grp.last_uuid = grp.findLastUuid( rtn.response )
+		return rtn
 	end
 	function grp.uploadFileObject( xtra )
 		grp.handleXtra( xtra )
@@ -499,7 +510,9 @@ function Apigee.new( params )
 		local url = grp.baseUrl() .. "/"
 				.. grp.collection .. "/"
 				.. grp.uuid .. "/data"
-		grp.ApigeeWorker( "up_file", "POST", url, auxdata )
+		local rtn = grp.ApigeeWorker( "POST", url, auxdata )
+		grp.last_uuid = grp.findLastUuid( rtn.response )
+		return rtn
 	end
 	function grp.downloadFileObject( xtra )
 		grp.handleXtra( xtra )
@@ -518,7 +531,9 @@ function Apigee.new( params )
 		local url = grp.baseUrl() .. "/"
 				.. grp.collection .. "/"
 				.. grp.uuid .. "/data"
-		grp.ApigeeWorker( "dn_file", "GET", url, auxdata )
+		local rtn = grp.ApigeeWorker( "GET", url, auxdata )
+		grp.last_uuid = grp.findLastUuid( rtn.response )
+		return rtn
 	end
 	
 	--

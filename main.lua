@@ -27,13 +27,13 @@
 require( "apigeeInfo" )
 
 -- what test-environment to run?
-synchr_tests = false
+synchr_tests = true
 asynchr_tests = false
-cmdseq_tests = true
+cmdseq_tests = false
 -- what test-sets to run?
 entity_tests = false
 collection_tests = false
-file_tests = false
+file_tests = true
 activity_tests = true
 event_tests = false
 

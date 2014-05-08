@@ -126,6 +126,60 @@ if( collection_tests ) then
 	printResult( rtn )
 end
 
+if( file_tests ) then
+	-- create a new object, retrieve it, then delete it
+	print( "create new file" )
+	rtn = apobj.createFileObject({
+		collection = "assets",
+		data = {
+			name = "data.txt",
+			path = "/data.txt",
+		},
+	})
+	printResult( rtn )
+	print( "retrieve file" )
+	rtn = apobj.retrieveFileObject({
+		collection = "assets",
+		uuid = "LAST",
+	})
+	printResult( rtn )
+	print( "update file" )
+	rtn = apobj.updateFileObject({
+		collection = "assets",
+		data = {
+			myextradata = "foobarbaz",
+		},
+		uuid = "LAST",
+	})
+	printResult( rtn )
+	print( "upload file" )
+	rtn = apobj.uploadFileObject({
+		collection = "assets",
+		data = {
+			filename = "data.txt",
+			baseDirectory = system.CachesDirectory,
+		},
+		uuid = "LAST",
+	})
+	printResult( rtn )
+	print( "download file" )
+	rtn = apobj.downloadFileObject({
+		collection = "assets",
+		data = {
+			filename = "data_dn.txt",
+			baseDirectory = system.CachesDirectory,
+		},
+		uuid = "LAST",
+	})
+	printResult( rtn )
+	print( "delete file" )
+	rtn = apobj.deleteFileObject({
+		collection = "assets",
+		uuid = "LAST",
+	})
+	printResult( rtn )
+end
+
 --
 --  --  --  --  --  --  --  --  --  --  --  --  --  --
 --
