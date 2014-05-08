@@ -155,12 +155,12 @@ function Apigee.new( params )
 		end
 	end
 
-	function grp.ApigeeWorker( command, httpverb, url, auxdata )
+	function grp.ApigeeWorker( httpverb, url, auxdata )
 		grp.command = command
 		grp.inProgress = true
 		grp.network_num_tries = 1
 
-		print( "final command ["..command.."] ("..httpverb..") ["..url.."]" )
+		print( "final http request ("..httpverb..") ["..url.."]" )
 		if( grp.sessionauth ~= nil ) then
 			if( grp.sessionauth ~= "default" ) then
 				print( "  valid sessionauth token found" )
@@ -244,7 +244,7 @@ function Apigee.new( params )
 			username = grp.username,
 			password = grp.password
 		})
-		grp.ApigeeWorker( "login", "POST", url, auxdata )
+		grp.ApigeeWorker( "POST", url, auxdata )
 	end
 	function grp.userLogout( xtra )
 		grp.handleXtra( xtra )
@@ -253,7 +253,7 @@ function Apigee.new( params )
 				.. grp.username .. "/revoketokens?token="
 				.. grp.sessionauth
 			-- TODO: should verify that authorization is by session-token
-		grp.ApigeeWorker( "logout", "POST", url, auxdata )
+		grp.ApigeeWorker( "POST", url, auxdata )
 	end
 
 
@@ -270,7 +270,7 @@ function Apigee.new( params )
 		auxdata.body = json.encode( grp.data )
 		local url = grp.baseUrl() .. "/"
 				.. grp.collection
-		grp.ApigeeWorker( "c_data", "POST", url, auxdata )
+		grp.ApigeeWorker( "POST", url, auxdata )
 	end
 	function grp.retrieveDataObject( xtra )
 		grp.handleXtra( xtra )
@@ -282,7 +282,7 @@ function Apigee.new( params )
 		local url = grp.baseUrl() .. "/"
 				.. grp.collection .. "/"
 				.. grp.uuid
-		grp.ApigeeWorker( "r_data", "GET", url, auxdata )
+		grp.ApigeeWorker( "GET", url, auxdata )
 	end
 	function grp.updateDataObject( xtra )
 		grp.handleXtra( xtra )
@@ -299,7 +299,7 @@ function Apigee.new( params )
 		local url = grp.baseUrl() .. "/"
 				.. grp.collection .. "/"
 				.. grp.uuid
-		grp.ApigeeWorker( "u_data", "PUT", url, auxdata )
+		grp.ApigeeWorker( "PUT", url, auxdata )
 	end
 	function grp.deleteDataObject( xtra )
 		grp.handleXtra( xtra )
@@ -311,7 +311,7 @@ function Apigee.new( params )
 		local url = grp.baseUrl() .. "/"
 				.. grp.collection .. "/"
 				.. grp.uuid
-		grp.ApigeeWorker( "d_data", "DELETE", url, auxdata )
+		grp.ApigeeWorker( "DELETE", url, auxdata )
 	end
 
 
@@ -327,7 +327,7 @@ function Apigee.new( params )
 		local auxdata = grp.initAuxdata()
 		local url = grp.baseUrl() .. "/"
 				.. grp.collection
-		grp.ApigeeWorker( "c_coll", "POST", url, auxdata )
+		grp.ApigeeWorker( "POST", url, auxdata )
 	end
 	function grp.retrieveCollectionObject( xtra )
 		grp.handleXtra( xtra )
@@ -339,7 +339,7 @@ function Apigee.new( params )
 		local auxdata = grp.initAuxdata()
 		local url = grp.baseUrl() .. "/"
 				.. grp.collection
-		grp.ApigeeWorker( "r_coll", "GET", url, auxdata )
+		grp.ApigeeWorker( "GET", url, auxdata )
 	end
 	function grp.updateCollectionObject( xtra )
 		grp.throwError( "No way to update a collection" )
@@ -364,7 +364,7 @@ function Apigee.new( params )
 		auxdata.body = json.encode( grp.data )
 		local url = grp.baseUrl() .. "/"
 				.. grp.collection
-		grp.ApigeeWorker( "c_file", "POST", url, auxdata )
+		grp.ApigeeWorker( "POST", url, auxdata )
 	end
 	function grp.retrieveFileObject( xtra )
 		grp.handleXtra( xtra )
@@ -376,7 +376,7 @@ function Apigee.new( params )
 		local url = grp.baseUrl() .. "/"
 				.. grp.collection .. "/"
 				.. grp.uuid
-		grp.ApigeeWorker( "r_file", "GET", url, auxdata )
+		grp.ApigeeWorker( "GET", url, auxdata )
 	end
 	function grp.updateFileObject( xtra )
 		grp.handleXtra( xtra )
@@ -393,7 +393,7 @@ function Apigee.new( params )
 		local url = grp.baseUrl() .. "/"
 				.. grp.collection .. "/"
 				.. grp.uuid
-		grp.ApigeeWorker( "u_file", "PUT", url, auxdata )
+		grp.ApigeeWorker( "PUT", url, auxdata )
 	end
 	function grp.deleteFileObject( xtra )
 		grp.handleXtra( xtra )
@@ -405,7 +405,7 @@ function Apigee.new( params )
 		local url = grp.baseUrl() .. "/"
 				.. grp.collection .. "/"
 				.. grp.uuid
-		grp.ApigeeWorker( "d_file", "DELETE", url, auxdata )
+		grp.ApigeeWorker( "DELETE", url, auxdata )
 	end
 	function grp.uploadFileObject( xtra )
 		grp.handleXtra( xtra )
@@ -438,7 +438,7 @@ function Apigee.new( params )
 		local url = grp.baseUrl() .. "/"
 				.. grp.collection .. "/"
 				.. grp.uuid .. "/data"
-		grp.ApigeeWorker( "up_file", "POST", url, auxdata )
+		grp.ApigeeWorker( "POST", url, auxdata )
 	end
 	function grp.downloadFileObject( xtra )
 		grp.handleXtra( xtra )
@@ -457,7 +457,7 @@ function Apigee.new( params )
 		local url = grp.baseUrl() .. "/"
 				.. grp.collection .. "/"
 				.. grp.uuid .. "/data"
-		grp.ApigeeWorker( "dn_file", "GET", url, auxdata )
+		grp.ApigeeWorker( "GET", url, auxdata )
 	end
 	
 	--
@@ -501,7 +501,7 @@ function Apigee.new( params )
 			-- could use user-uuid instead of 'me'
 			url = grp.baseUrl() .. "/users/me/activities"
 		end
-		grp.ApigeeWorker( "c_act", "POST", url, auxdata )	
+		grp.ApigeeWorker( "POST", url, auxdata )	
 	end
 	function grp.retrieveActivityObject( xtra )
 		grp.handleXtra( xtra )
@@ -519,7 +519,7 @@ function Apigee.new( params )
 			url = grp.baseUrl() .. "/groups/"
 				.. d.group .. "/activities"
 		end
-		grp.ApigeeWorker( "c_act", "GET", url, auxdata )	
+		grp.ApigeeWorker( "GET", url, auxdata )	
 	end
 
 
@@ -548,13 +548,13 @@ function Apigee.new( params )
 		end
 		auxdata.body = json.encode( grp.data )
 		local url = grp.baseUrl() .. "/events"
-		grp.ApigeeWorker( "c_act", "POST", url, auxdata )	
+		grp.ApigeeWorker( "POST", url, auxdata )	
 	end
 	function grp.retrieveEventObject( xtra )
 		grp.handleXtra( xtra )
 		local auxdata = grp.initAuxdata()
 		local url = grp.baseUrl() .. "/events"
-		grp.ApigeeWorker( "c_act", "GET", url, auxdata )	
+		grp.ApigeeWorker( "GET", url, auxdata )	
 	end
 	function grp.retrieveCounterObject( xtra )
 		grp.handleXtra( xtra )
@@ -571,7 +571,7 @@ function Apigee.new( params )
 		end
 		local url = grp.baseUrl() .. "/counters?counter="
 				.. d.counter
-		grp.ApigeeWorker( "c_count", "GET", url, auxdata )	
+		grp.ApigeeWorker( "GET", url, auxdata )	
 	end
 
 	return grp

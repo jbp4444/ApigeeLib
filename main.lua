@@ -27,14 +27,14 @@
 require( "apigeeInfo" )
 
 -- what test-environment to run?
-synchr_tests = true
-asynchr_tests = false
-cmdseq_tests = false
+synchr_tests = false
+asynchr_tests = false  -- only login/logout are testable for asynchr
+cmdseq_tests = true    -- ... use cmdseq instead
 -- what test-sets to run?
 entity_tests = false
 collection_tests = false
 file_tests = false
-activity_tests = false
+activity_tests = true
 event_tests = true
 
 --
