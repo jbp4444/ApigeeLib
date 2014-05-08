@@ -33,9 +33,9 @@ cmdseq_tests = false
 -- what test-sets to run?
 entity_tests = false
 collection_tests = false
-file_tests = true
-activity_tests = true
-event_tests = false
+file_tests = false
+activity_tests = false
+event_tests = true
 
 --
 --  --  --  --  --  --  --  --  --  --  --  --  --  --

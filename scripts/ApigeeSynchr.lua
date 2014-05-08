@@ -235,8 +235,10 @@ function Apigee.new( params )
 			last_uuid = grp.last_uuid
 		else
 			if( tbl.entities ~= nil ) then
-				if( tbl.entities[1].uuid ~= nil ) then
-					last_uuid = tbl.entities[1].uuid
+				if( tbl.entities[1] ~= nil ) then
+					if( tbl.entities[1].uuid ~= nil ) then
+						last_uuid = tbl.entities[1].uuid
+					end
 				end
 			end
 		end
@@ -577,7 +579,9 @@ function Apigee.new( params )
 			-- could use user-uuid instead of 'me'
 			url = grp.baseUrl() .. "/users/me/activities"
 		end
-		grp.ApigeeWorker( "c_act", "POST", url, auxdata )	
+		local rtn = grp.ApigeeWorker( "POST", url, auxdata )
+		grp.last_uuid = grp.findLastUuid( rtn.response )
+		return rtn	
 	end
 	function grp.retrieveActivityObject( xtra )
 		grp.handleXtra( xtra )
@@ -595,7 +599,9 @@ function Apigee.new( params )
 			url = grp.baseUrl() .. "/groups/"
 				.. d.group .. "/activities"
 		end
-		grp.ApigeeWorker( "c_act", "GET", url, auxdata )	
+		local rtn = grp.ApigeeWorker( "GET", url, auxdata )	
+		grp.last_uuid = grp.findLastUuid( rtn.response )
+		return rtn	
 	end
 
 
@@ -624,13 +630,17 @@ function Apigee.new( params )
 		end
 		auxdata.body = json.encode( grp.data )
 		local url = grp.baseUrl() .. "/events"
-		grp.ApigeeWorker( "c_act", "POST", url, auxdata )	
+		local rtn = grp.ApigeeWorker( "POST", url, auxdata )	
+		grp.last_uuid = grp.findLastUuid( rtn.response )
+		return rtn	
 	end
 	function grp.retrieveEventObject( xtra )
 		grp.handleXtra( xtra )
 		local auxdata = grp.initAuxdata()
 		local url = grp.baseUrl() .. "/events"
-		grp.ApigeeWorker( "c_act", "GET", url, auxdata )	
+		local rtn = grp.ApigeeWorker( "GET", url, auxdata )	
+		grp.last_uuid = grp.findLastUuid( rtn.response )
+		return rtn	
 	end
 	function grp.retrieveCounterObject( xtra )
 		grp.handleXtra( xtra )
@@ -647,7 +657,9 @@ function Apigee.new( params )
 		end
 		local url = grp.baseUrl() .. "/counters?counter="
 				.. d.counter
-		grp.ApigeeWorker( "c_count", "GET", url, auxdata )	
+		local rtn = grp.ApigeeWorker( "GET", url, auxdata )	
+		grp.last_uuid = grp.findLastUuid( rtn.response )
+		return rtn	
 	end
 
 	return grp

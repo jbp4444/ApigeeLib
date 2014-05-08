@@ -180,6 +180,56 @@ if( file_tests ) then
 	printResult( rtn )
 end
 
+if( activity_tests ) then
+	print( "create an activity" )
+	rtn = apobj.createActivityObject({
+		data = {
+			verb = "post",
+			content = "new user content"
+		},
+	})
+	printResult( rtn )
+	print( "create a group activity" )
+	local rtn = apobj.createActivityObject({
+		data = {
+			group = "onebiggroup",
+			verb = "post",
+			content = "new group content"
+		},
+	})
+	printResult( rtn )
+	print( "retrieve default activities" )
+	rtn = apobj.retrieveActivityObject( nil )
+	printResult( rtn )
+	print( "retrieve group activity" )
+	rtn = apobj.retrieveActivityObject( {
+		data = {
+			group = "onebiggroup",
+		}
+	})
+	printResult( rtn )
+end
+
+if( event_tests ) then
+	print( "create an event" )
+	rtn = apobj.createEventObject({
+		data = {
+			category = "mycategory",
+		},
+	})
+	printResult( rtn )
+	print( "retrieve default event" )
+	rtn = apobj.retrieveEventObject( nil )
+	printResult( rtn )
+	print( "retrieve some counters" )
+	rtn = apobj.retrieveCounterObject({
+		data = {
+			counter = "default"
+		},
+	})
+	printResult( rtn )
+end
+
 --
 --  --  --  --  --  --  --  --  --  --  --  --  --  --
 --
