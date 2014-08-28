@@ -51,6 +51,20 @@ function CommandSeq.new( clObj, params )
 		end
 	end
 	
+	function csObj.userFunction( tbl )
+		print( "found a userfunc call" )
+		local f = tbl.fcn
+		local x = tbl.args
+		print( "  f = ["..tostring(f).."]" )
+		f( x )
+		catchCloudResult( {
+			name = "CommandSeqResponse",
+			isError = false,
+			status = 8800,
+			response = "userFunction called",
+		} )
+	end
+ 	
 	function csObj.exec()
 		-- TODO: make sure onComplete funcs (cloudObj and cmdSeq) 
 		-- are configured properly
@@ -73,6 +87,9 @@ function CommandSeq.new( clObj, params )
 		print( "running "..t.." command" )
 		--print( "  onComplete = "..tostring(x.onComplete) )
 		--print( "  user onComplete = "..tostring(csObj.userOnComplete) )
+		--print( "  f = ["..tostring(f).."]" )
+		--print( "  x = ["..tostring(x).."]" )
+		--print_r( x )
 		f( x )
 	end
 
@@ -86,6 +103,35 @@ function CommandSeq.new( clObj, params )
 		else
 			-- just one command to add
 			table.insert( csObj.seq, {txt,cmd,opts} )
+		end
+	end
+	
+	function csObj.insertBefore( keyname, txt, cmd, opts )
+		print( "inserting command before ("..keyname..")" )
+		-- first, find the keyname to insert near
+		local keyidx = -1
+		for i,v in ipairs(csObj.seq) do
+			if( v[1] == keyname ) then
+				print( "found key ["..keyname.."] at i="..i )
+				keyidx = i
+				break
+			end
+		end
+		
+		if( keyidx <= 0 ) then
+			-- error
+			print( "Error - could not find key ["..keyname.."]" )
+		else
+			-- TODO: check args/list for validity
+			if( type(txt) == "table" ) then
+				-- assume this is a list of commands to add
+				for i,j in ipairs(txt) do
+					table.insert( csObj.seq, keyidx+i-1, j )
+				end
+			else
+				-- just one command to add
+				table.insert( csObj.seq, keyidx, {txt,cmd,opts} )
+			end
 		end
 	end
 

@@ -16,6 +16,14 @@
 --   limitations under the License.
 --
 
+--
+-- NOTE: the callback nature of the asynchr calls makes it difficult
+-- to lay out sets of tests to perform (they'd all have to be chained).
+-- The CommandSeq module does exactly that and uses the same underlying
+-- Asynchr lib ... so running the CommandSeq tests will perform all the
+-- same unit-tests that a "full" asynchr test-set would perform.
+--
+
 local apigee = require( "scripts.ApigeeAsynchr" )
 local json = require( "json" )
 

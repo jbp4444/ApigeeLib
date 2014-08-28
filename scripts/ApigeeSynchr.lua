@@ -35,6 +35,11 @@ function Apigee.new( params )
 		data = 0,
 		last_uuid = "LAST",
 		headers = {},
+		source_collection = "default",
+		source_entity = "default",
+		relationship = "connected",
+		target_collection = "default",
+		target_entity = "default",
 		onComplete = function(e)
 			print( "default ApigeeObj.onComplete function called" ) 
 		end
@@ -511,7 +516,7 @@ function Apigee.new( params )
 		fp:close()
 		local url = grp.baseUrl() .. "/"
 				.. grp.collection .. "/"
-				.. grp.uuid .. "/data"
+				.. grp.uuid
 		local rtn = grp.ApigeeWorker( "POST", url, auxdata )
 		grp.last_uuid = grp.findLastUuid( rtn.response )
 		return rtn
@@ -523,6 +528,8 @@ function Apigee.new( params )
 			return
 		end
 		local auxdata = grp.initAuxdata()
+		-- make sure we retrieve the asset, not the entity
+		auxdata.headers["Content-Type"] = "application/octet-stream"
 		if( grp.data.filename == nil ) then
 			grp.throwError( "No upload file specified" )
 			return
@@ -532,7 +539,7 @@ function Apigee.new( params )
 		end
 		local url = grp.baseUrl() .. "/"
 				.. grp.collection .. "/"
-				.. grp.uuid .. "/data"
+				.. grp.uuid
 		local rtn = grp.ApigeeWorker( "GET", url, auxdata )
 		grp.last_uuid = grp.findLastUuid( rtn.response )
 		return rtn
@@ -661,6 +668,53 @@ function Apigee.new( params )
 		grp.last_uuid = grp.findLastUuid( rtn.response )
 		return rtn	
 	end
+	
+	--
+	-- make a connection between two objects
+	function grp.makeConnection( xtra )
+		grp.handleXtra( xtra )
+		if( grp.source_collection == nil ) then
+			return {
+				isError = true,
+				status = 9900,
+				statusString = "No source-collection specified",
+			}
+		elseif( grp.source_entity == nil ) then
+			return {
+				isError = true,
+				status = 9900,
+				statusString = "No source-entity specified",
+			}
+		elseif( grp.relationship == nil ) then
+			return {
+				isError = true,
+				status = 9901,
+				statusString = "No relationship specified",
+			}
+		elseif( grp.target_collection == nil ) then
+			return {
+				isError = true,
+				status = 9902,
+				statusString = "No target-collection specified",
+			}
+		elseif( grp.target_entity == nil ) then
+			return {
+				isError = true,
+				status = 9903,
+				statusString = "No target-entity specified",
+			}
+		end
+		local auxdata = grp.initAuxdata()
+		auxdata.body = nil
+		local url = grp.baseUrl() .. "/"
+				.. grp.source_collection .. "/" .. grp.source_entity .. "/"
+				.. grp.relationship .. "/"
+				.. grp.target_collection .. "/" .. grp.target_entity
+		local rtn = grp.ApigeeWorker( "POST", url, auxdata )
+		grp.last_uuid = grp.findLastUuid( rtn.response )
+		return rtn
+	end
+	
 
 	return grp
 end

@@ -34,8 +34,49 @@ cmdseq_tests = true    -- ... use cmdseq instead
 entity_tests = false
 collection_tests = false
 file_tests = false
-activity_tests = true
-event_tests = true
+activity_tests = false
+event_tests = false
+query_tests = true
+
+--
+--  --  --  --  --  --  --  --  --  --  --  --  --  --
+--
+
+function print_r ( t ) 
+        local print_r_cache={}
+        local function sub_print_r(t,indent)
+                if ( print_r_cache[tostring(t)]) then
+                        print(indent.."*"..tostring(t))
+                else
+                        if (type(t)=="table") then
+	                        print_r_cache[tostring(t)]=true
+                            for pos,val in pairs(t) do
+                                    if (type(val)=="table") then
+                                            print(indent.."["..pos.."] => "..tostring(t).." {")
+                                            --sub_print_r(val,indent..string.rep(" ",string.len(pos)+8))
+                                            sub_print_r(val,indent.."  ")
+                                            --print(indent..string.rep(" ",string.len(pos)+6).."}")
+                                            print(indent.."}")
+                                    elseif (type(val)=="string") then
+                                            print(indent.."["..pos..'] => "'..val..'"')
+                                    else
+                                            print(indent.."["..pos.."] => "..tostring(val))
+                                    end
+                            end
+                        else
+                                print(indent..tostring(t))
+                        end
+                end
+        end -- end of function
+        if (type(t)=="table") then
+                print(tostring(t).." {")
+                sub_print_r(t,"  ")
+                print("}")
+        else
+                sub_print_r(t,"  ")
+        end
+        print()
+end
 
 --
 --  --  --  --  --  --  --  --  --  --  --  --  --  --

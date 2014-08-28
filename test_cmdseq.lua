@@ -62,7 +62,7 @@ if( entity_tests ) then
 	commandSeq.add({
 		-- retrieve a known data-object
 		{ "dataobj-retrieve", apobj.retrieveDataObject, {
-			uuid = "7b6ef8fa-b686-11e3-b523-29a1e08cd3ce",
+			uuid = "866c1e9a-2e0e-11e4-b2fa-77be4ae26928",
 		} },
 	
 		-- create a new object, retrieve it, then delete it
@@ -200,6 +200,69 @@ if( event_tests ) then
 				counter = "default"
 			},
 		} },
+	})
+end
+
+if( query_tests ) then
+	function inspectResults( tbl )
+		print( "inspectResult caught:" )
+		for k,v in pairs(tbl.apobj.last_response.entities) do
+			print( "  ["..k.."] = ["..tostring(v).."]  ("..v.uuid..")" )
+			--print_r( v )
+			commandSeq.insertBefore( "logout", 
+				"query-dataobj-delete",
+				apobj.deleteDataObject, {
+					uuid = v.uuid,
+			} )
+		end
+	end
+	
+	commandSeq.add({
+		-- create a new object, retrieve it, then delete it
+		--{ "query-collobj-create", apobj.createCollectionObject, {
+		--	collection = "stuffs",
+		--} },
+		{ "query-dataobj-create", apobj.createDataObject, {
+			data = {
+				mykey = "abc",
+				myval = "123",
+			},
+		} },
+		{ "query-dataobj-create", apobj.createDataObject, {
+			data = {
+				mykey = "abc",
+				myval = "456",
+			},
+		} },
+		{ "query-dataobj-create", apobj.createDataObject, {
+			data = {
+				mykey = "def",
+				myval = "123",
+			},
+		} },
+		{ "query-collobj-query1", apobj.queryCollectionObject, {
+			collection = "stuff",
+			query = "mykey='abc'"
+		} },
+		{ "query-collobj-query2", apobj.queryCollectionObject, {
+			collection = "stuff",
+			query = "myval='123'"
+		} },
+		{ "query-collobj-query3", apobj.queryCollectionObject, {
+			collection = "stuff",
+			query = "",
+		} },
+		{ "query-inspect-results", commandSeq.userFunction, {
+			fcn  = inspectResults,
+			args = {
+				collection = "stuff",
+				query = "",
+				apobj = apobj,
+			}
+		} },
+		--{ "query-collobj-delete", apobj.deleteCollectionObject, {
+		--	collection = "stuff",
+		--} },
 	})
 end
 

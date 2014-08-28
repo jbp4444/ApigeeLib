@@ -15,6 +15,7 @@
 --
 
 local json = require( "json" )
+local socketurl = require( "socket.url" ) -- for urlencode/escape
 
 local Apigee = {}
 
@@ -29,6 +30,7 @@ function Apigee.new( params )
 		username = "default",
 		password = "default",
 		sessionauth = "default",
+		query = "default",
 		uuid = 0,
 		data = 0,
 		headers = {},
@@ -141,7 +143,8 @@ function Apigee.new( params )
 				local resp = json.decode( event.response )
 				--print( "resp = "..tostring(resp) )
 				grp.last_response = resp
-				if( grp.command == "login" ) then
+				if( (resp.access_token ~= nil) and
+					(resp.expires_in ~= nil) ) then
 					print( "found a login response" )
 					grp.handleLoginResponse( event, resp )
 				end
@@ -156,7 +159,6 @@ function Apigee.new( params )
 	end
 
 	function grp.ApigeeWorker( httpverb, url, auxdata )
-		grp.command = command
 		grp.inProgress = true
 		grp.network_num_tries = 1
 
@@ -168,6 +170,9 @@ function Apigee.new( params )
 		end
 		if( auxdata.headers ~= nil ) then
 			print( "  extra headers found" )
+			for k,v in pairs(auxdata.headers) do
+				print( "    ["..k.."]=["..v.."]" )
+			end
 		end
 		if( auxdata.body ~= nil ) then
 			print( "  body data found ["..auxdata.body.."]" )
@@ -346,6 +351,21 @@ function Apigee.new( params )
 	end
 	function grp.deleteCollectionObject( xtra )
 		grp.throwError( "No way to delete a collection" )
+	end
+	
+	-- queries on collection objects
+	function grp.queryCollectionObject( xtra )
+		grp.handleXtra( xtra )
+		if( grp.collection == nil ) then
+			grp.throwError( "No collection specified" )
+			return
+		end
+		-- TODO: check that collection is pluralized
+		local auxdata = grp.initAuxdata()
+		local url = grp.baseUrl() .. "/"
+				.. grp.collection .. "?ql="
+				.. socketurl.escape(grp.query)
+		grp.ApigeeWorker( "GET", url, auxdata )	
 	end
 
 
